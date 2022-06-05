@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React,{useState,useEffect} from "react";
+import axios from "axios"
+import Products from "./components/Products"
+const App = () => {
+  let [data,setData]=React.useState([])
+  let [checked,setChecked]=React.useState(false)
+  let [page,setPage]=React.useState(1)
+  let [limit,setLimit]=React.useState(3)
+  let [totalpage,setTotalpage]=useState(0)
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  let Ondelete=(id)=>{
+    setData(data.filter((props)=>props.id!==id))
+}  
+  useEffect(()=>{
+    axios.get(` http://localhost:8080/products?_page=${page}&_limit=${limit}`).then((resp)=>{
+      setData(resp.data)
+      setTotalpage(Number(resp.headers["x-total-count"]))
+      console.log(totalpage)
+    })
+  },[page,limit,checked])
+  return <div>
+    
+    <Products totalpage={totalpage}page={page} setPage={setPage} Ondelete={Ondelete} limit={limit} setLimit={ setLimit}checked={checked} setChecked={setChecked} data={data} setData={setData}/>
+
+    </div>;
+};
 
 export default App;
